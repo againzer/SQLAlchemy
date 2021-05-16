@@ -108,17 +108,9 @@ def temp():
 @app.route("/api/v1.0/<start>`")
 def start(start):
     session = Session(engine)
-    for fmt in ('%Y-%m-%d', '%d.%m.%Y', '%d/%m/%Y'):
-        try:
-            start_strp = dt.strptime(start,fmt)
-            canoncalized = dt.strftime(start_strp,'%Y-%m-%d')
-            results_start = session.query(measurement.station,func.min(measurement.prcp),func.max(measurement.prcp),func.avg(measurement.prcp)).filter(measurement.date >= canoncalized)
-            return jsonify(results_start)
-            session.close()
-        except ValueError:
-            return('no valid date format found: please use %Y-%m-%d', '%d.%m.%Y', '%d/%m/%Y')
-            pass
-    raise ValueError('no valid date format found: please use %Y-%m-%d', '%d.%m.%Y', '%d/%m/%Y')
+    results_start = session.query(measurement.station,func.min(measurement.prcp),func.max(measurement.prcp),func.avg(measurement.prcp)).filter(measurement.date >= start)
+    session.close()
+    return jsonify(results_start)
   #When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
 
 
