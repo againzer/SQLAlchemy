@@ -105,14 +105,19 @@ def temp():
 #Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
 
   #When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
-@app.route("/api/v1.0/<start>`")
+@app.route("/api/v1.0/<start>")
 def start(start):
     session = Session(engine)
-    results_start = session.query(measurement.station,func.min(measurement.prcp),func.max(measurement.prcp),func.avg(measurement.prcp)).filter(measurement.date >= start)
-    session.close()
-    return jsonify(results_start)
+    results_start = session.query(func.min(measurement.tobs),func.max(measurement.tobs),func.avg(measurement.tobs)).filter(measurement.date >= start).all()
+    results_unravel = list(np.ravel(results_start))
+    return jsonify(results_unravel)
   #When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
-
+@app.route("/api/v1.0/<start>/<end>")
+def start(start,end):
+    session = Session(engine)
+    results_start = session.query(func.min(measurement.tobs),func.max(measurement.tobs),func.avg(measurement.tobs)).filter(measurement.date >= start).filter(measurement.date <= end).all()
+    results_unravel = list(np.ravel(results_start))
+    return jsonify(results_unravel)
 
 if __name__ == '__main__':
     app.run(debug=True)
