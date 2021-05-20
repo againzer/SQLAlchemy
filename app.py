@@ -113,7 +113,9 @@ def start(start):
     return jsonify(results_unravel)
   #When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
 @app.route("/api/v1.0/<start>/<end>")
-def start(start,end):
+def startend():
+    start = request.args.get('start',None)
+    end = request.args.get('end',None)
     session = Session(engine)
     results_start = session.query(func.min(measurement.tobs),func.max(measurement.tobs),func.avg(measurement.tobs)).filter(measurement.date >= start).filter(measurement.date <= end).all()
     results_unravel = list(np.ravel(results_start))
